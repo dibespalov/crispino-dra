@@ -63,4 +63,8 @@ data/claims/*
 
 # But keep the folders trackable in Git via .gitkeep
 !data/contracts/.gitkeep
-!data/claims/.gitkeep
+!data/claims/.
+
+# Audit logs — generated per run, should not be committed
+logs/
+!logs/.gitkeep
