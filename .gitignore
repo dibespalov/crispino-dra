@@ -1,0 +1,66 @@
+gitignore# ============================================================
+# SECRETS — never commit these
+# ============================================================
+.env
+.env.local
+.env.*.local
+*.key
+*.pem
+
+# ============================================================
+# PYTHON
+# ============================================================
+# Virtual environment
+.venv/
+venv/
+env/
+
+# Bytecode cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+*.egg
+
+# ============================================================
+# IDE / EDITOR
+# ============================================================
+.vscode/
+.idea/
+.cursor/
+*.swp
+*.swo
+
+# ============================================================
+# OS
+# ============================================================
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ============================================================
+# PROJECT-SPECIFIC
+# ============================================================
+# Don't commit generated agent outputs, but keep the folder
+data/outputs/*
+!data/outputs/.gitkeep
+
+# Log files
+*.log
+
+# ============================================================
+# CONFIDENTIAL CASE MATERIALS — never commit
+# ============================================================
+# Real contracts and claims provided by teammates
+data/contracts/*
+data/claims/*
+
+# But keep the folders trackable in Git via .gitkeep
+!data/contracts/.gitkeep
+!data/claims/.gitkeep
