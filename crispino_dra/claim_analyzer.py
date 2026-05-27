@@ -335,7 +335,7 @@ def analyze_claim_item(
 
     response = client.messages.create(
         model=model,
-        max_tokens=8000,
+        max_tokens=16000,
         system=ANALYZER_SYSTEM_PROMPT,
         tools=[ASSESSMENT_TOOL],
         tool_choice={"type": "tool", "name": "submit_claim_assessment"},
@@ -358,6 +358,9 @@ def analyze_claim_item(
     parsed = tool_use_block.input  # Already a Python dict — no JSON parsing needed
 
     # Construct the typed brief
+    # Be tolerant of missing optional fields — Claude occasionally omits
+    # confidence_reasoning even when the schema requires it (especially near max_tokens).
+    # Fall back to sensible defaults rather than crashing the whole run.
     try:
         return ClaimAssessmentBrief(
             item_number=item.item_number,
@@ -367,13 +370,17 @@ def analyze_claim_item(
             procedural=ProceduralComplianceAnalysis(**parsed["procedural"]),
             evidence=EvidenceAnalysis(**parsed["evidence"]),
             counterargument=CounterArgument(**parsed["counterargument"]),
-            areas_of_ambiguity=parsed["areas_of_ambiguity"],
-            confidence=parsed["confidence"],
-            confidence_reasoning=parsed["confidence_reasoning"],
+            areas_of_ambiguity=parsed.get("areas_of_ambiguity", []),
+            confidence=parsed.get("confidence", "UNCLEAR"),
+            confidence_reasoning=parsed.get(
+                "confidence_reasoning",
+                "Confidence reasoning was not provided in the structured output. "
+                "Reviewer should re-run analysis or interpret confidence with extra caution."
+            ),
         )
     except (KeyError, TypeError) as e:
         raise RuntimeError(
-            f"Analyzer tool output missing or malformed field for item {item.item_number}: {e}\n"
+            f"Analyzer tool output missing required field for item {item.item_number}: {e}\n"
             f"Got keys: {list(parsed.keys())}"
         ) from e
 
