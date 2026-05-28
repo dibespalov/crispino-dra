@@ -146,7 +146,11 @@ def run_crispino(
                     ): item
                     for item in items
                 }
-
+                
+                # Notify the GUI that each item is now in flight
+                for item in items:
+                    notify("item_start", f"Item {item.item_number}: {item.title}")
+                
                 # Collect results as they complete (in completion order, not submission order)
                 for future in as_completed(future_to_item):
                     item = future_to_item[future]
